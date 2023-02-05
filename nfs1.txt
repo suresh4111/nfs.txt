@@ -1,0 +1,23 @@
+#on NFS Server
+yum install nfs-utils nano
+systemctl start nfs-server rpcbind
+systemctl enable nfs-server rpcbind
+mkdir /mnt/nfsshare
+chmod 777 /mnt/nfsshare/
+nano /etc/exports
+#add line in exports file --> /mnt/nfsshare 192.168.0.0/16(rw,sync,no_root_squash)
+
+exportfs -r
+firewall-cmd --permanent --add-service mountd
+firewall-cmd --permanent --add-service rpc-bind
+firewall-cmd --permanent --add-service nfs
+firewall-cmd --reload
+ 
+
+#on NFS Client 
+yum install nfs-utils
+showmount -e 192.168.76.xxx # it will show mount location
+mkdir /mnt/nfsdrive
+mount 192.168.76.xxx:/mnt/nfsshare /mnt/nfsdrive/
+mount | grep nfs
+df -h
